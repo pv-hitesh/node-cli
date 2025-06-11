@@ -1,0 +1,60 @@
+import express from 'express';
+import dotenv from 'dotenv';<% if (features.includes('cors')) { %>
+import cors from 'cors';<% } %><% if (features.includes('logger')) { %>
+import { logger } from './config/logger.js';<% } %><% if (features.includes('rateLimit')) { %>
+import rateLimit from 'express-rate-limit';<% } %>
+import { router as apiRoutes } from './routes/index.js';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware<% if (features.includes('cors')) { %>
+app.use(cors());<% } %>
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+<% if (features.includes('rateLimit')) { %>// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api/', limiter);
+<% } %>
+<% if (features.includes('logger')) { %>// Logging middleware
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url} - ${req.ip}`);
+  next();
+});
+<% } %>
+// Routes
+app.use('/api', apiRoutes);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {<% if (features.includes('logger')) { %>
+  logger.error(err.stack);<% } %>
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  <% if (features.includes('logger')) { %>logger.info(`Server started on port ${PORT}`);<% } %>
+});
+
+export default app;

@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Boilerplate CLI Config Schema",
+  "description": "Schema for boiler.config.json file",
+  "required": ["name", "framework", "architecture", "features", "createdAt", "cliVersion"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name",
+      "minLength": 1
+    },
+    "framework": {
+      "type": "string",
+      "description": "Backend framework",
+      "enum": ["express", "fastify", "hono"]
+    },
+    "architecture": {
+      "type": "string",
+      "description": "Project architecture pattern",
+      "enum": ["mvc", "mvc-service-repo", "clean", "hexagonal"]
+    },
+    "orm": {
+      "type": "string",
+      "description": "ORM/ODM choice",
+      "enum": ["none", "mongoose", "prisma", "sequelize", "typeorm"]
+    },
+    "features": {
+      "type": "array",
+      "description": "List of enabled features",
+      "items": {
+        "type": "string",
+        "enum": ["auth", "logger", "cors", "rateLimit", "validation", "swagger", "testing"]
+      },
+      "uniqueItems": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Project creation timestamp"
+    },
+    "cliVersion": {
+      "type": "string",
+      "description": "CLI version used to create the project",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    }
+  },
+  "additionalProperties": false
+}
