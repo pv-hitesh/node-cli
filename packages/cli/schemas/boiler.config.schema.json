@@ -36,8 +36,7 @@
     },
     "createdAt": {
       "type": "string",
-      "format": "date-time",
-      "description": "Project creation timestamp"
+      "description": "Project creation date"
     },
     "cliVersion": {
       "type": "string",

@@ -29,28 +29,28 @@ program
     }
   });
 
-program
-  .command('add <feature>')
-  .description('Add a feature to existing project')
-  .action(async (feature: string) => {
-    try {
-      await addFeature(feature);
-    } catch (error) {
-      console.error(chalk.red('Error adding feature:'), (error as Error).message);
-      process.exit(1);
-    }
-  });
+// program
+//   .command('add <feature>')
+//   .description('Add a feature to existing project')
+//   .action(async (feature: string) => {
+//     try {
+//       await addFeature(feature);
+//     } catch (error) {
+//       console.error(chalk.red('Error adding feature:'), (error as Error).message);
+//       process.exit(1);
+//     }
+//   });
 
-program
-  .command('info')
-  .description('Show project information')
-  .action(async () => {
-    try {
-      await showProjectInfo();
-    } catch (error) {
-      console.error(chalk.red('Error showing project info:'), (error as Error).message);
-      process.exit(1);
-    }
-  });
+// program
+//   .command('info')
+//   .description('Show project information')
+//   .action(async () => {
+//     try {
+//       await showProjectInfo();
+//     } catch (error) {
+//       console.error(chalk.red('Error showing project info:'), (error as Error).message);
+//       process.exit(1);
+//     }
+//   });
 
 program.parse();

@@ -1,5 +1,26 @@
 import pkg from 'enquirer';
 const { prompt } = pkg;
+
+interface InputQuestion {
+  type: 'input';
+  name: string;
+  message: string;
+  initial?: string;
+}
+
+interface SelectQuestion {
+  type: 'select';
+  name: string;
+  message: string;
+  choices: (string | { name: string; value: string })[];
+}
+
+interface MultiSelectQuestion {
+  type: 'multiselect';
+  name: string;
+  message: string;
+  choices: (string | { name: string; value: string })[];
+}
 import chalk from 'chalk';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -12,89 +33,99 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export async function createProject(options: CreateProjectOptions = {}): Promise<void> {
-  console.log(chalk.yellow('📋 Let\'s set up your project!'));
-  
-  const answers = await prompt([
-    {
-      type: 'input',
-      name: 'projectName',
-      message: 'What is your project name?',
-      initial: options.name || 'my-api',
-      validate: (value: string) => value.length > 0 || 'Project name is required'
-    },
-    {
-      type: 'select',
-      name: 'framework',
-      message: 'Choose your framework:',
-      choices: [
-        { name: 'Express', value: 'express' }
-      ],
-      initial: options.framework || 'express'
-    },
-    {
-      type: 'select',
-      name: 'architecture',
-      message: 'Choose your architecture:',
-      choices: [
-        { name: 'MVC (Model-View-Controller)', value: 'mvc' },
-        { name: 'MVC + Service + Repository', value: 'mvc-service-repo' }
-      ],
-      initial: options.architecture || 'mvc'
-    },
-    {
-      type: 'select',
-      name: 'orm',
-      message: 'Choose your ORM/ODM:',
-      choices: [
-        { name: 'None', value: 'none' },
-        { name: 'Mongoose (MongoDB)', value: 'mongoose' },
-        { name: 'Prisma', value: 'prisma' }
-      ],
-      initial: 'none'
-    },
-    {
-      type: 'multiselect',
-      name: 'features',
-      message: 'Select features to include:',
-      choices: [
-        { name: 'Authentication (JWT)', value: 'auth' },
-        { name: 'Logger (Winston)', value: 'logger' },
-        { name: 'CORS', value: 'cors' },
-        { name: 'Rate Limiting', value: 'rateLimit' },
-        { name: 'Input Validation', value: 'validation' }
-      ]
+  try {
+    console.log(chalk.yellow('📋 Let\'s set up your project!'));
+    
+    const answers = await prompt<PromptAnswers>([
+      {
+        type: 'input',
+        name: 'projectName',
+        message: 'What is your project name?',
+        initial: options.name || 'my-api',
+        validate: (value: string) => {
+          if (!value.length) return 'Project name is required';
+          if (!/^[a-z0-9-]+$/.test(value)) return 'Project name can only contain lowercase letters, numbers, and hyphens';
+          return true;
+        }
+      } as InputQuestion,
+      {
+        type: 'select',
+        name: 'framework',
+        message: 'Choose your framework:',
+        choices: [
+          'express'
+        ],
+        initial: options.framework || 'express'
+      } as SelectQuestion,
+      {
+        type: 'select',
+        name: 'architecture',
+        message: 'Choose your architecture:',
+        choices: [
+          'mvc',
+          'mvc-service-repo'
+        ],
+        initial: options.architecture || 'mvc'
+      } as SelectQuestion,
+      {
+        type: 'select',
+        name: 'orm',
+        message: 'Choose your ORM/ODM:',
+        choices: [
+          'none',
+          'mongoose',
+          'prisma'
+        ],
+        initial: 'none'
+      } as SelectQuestion,
+      {
+        type: 'multiselect',
+        name: 'features',
+        message: 'Select features to include:',
+        choices: [
+          'auth',
+          'logger', 
+          'cors',
+          'rateLimit',
+          'validation'
+        ],
+        initial: []
+      } as MultiSelectQuestion
+    ]);
+
+    const config: ProjectConfig = {
+      name: answers.projectName.toLowerCase(),
+      framework: answers.framework,
+      architecture: answers.architecture,
+      orm: answers.orm,
+      features: answers.features || [],
+      createdAt: new Date().toISOString(),
+      cliVersion: '1.0.0'
+    };
+
+    console.log(chalk.blue('📝 Configuration:'));
+    console.log(JSON.stringify(config, null, 2));
+
+    // // Validate configuration
+    const isValid = await validateConfig(config);
+    if (!isValid) {
+      throw new Error('Invalid configuration');
     }
-  ]) as PromptAnswers;
 
-  const config: ProjectConfig = {
-    name: answers.projectName,
-    framework: answers.framework,
-    architecture: answers.architecture,
-    orm: answers.orm,
-    features: answers.features,
-    createdAt: new Date().toISOString(),
-    cliVersion: '1.0.0'
-  };
+    // Create project structure
+    console.log(chalk.green('🏗️  Creating project structure...'));
+    await createProjectStructure(config);
 
-  console.log(chalk.blue('📝 Configuration:'));
-  console.log(JSON.stringify(config, null, 2));
+    // Generate manifest file
+    console.log(chalk.green('📄 Generating manifest file...'));
+    await generateManifest(config);
 
-  // Validate configuration
-  const isValid = await validateConfig(config);
-  if (!isValid) {
-    throw new Error('Invalid configuration');
+    console.log(chalk.green('✅ Project created successfully!'));
+    console.log(chalk.yellow(`📁 cd ${config.name}`));
+    console.log(chalk.yellow('📦 npm install'));
+    console.log(chalk.yellow('🚀 npm run dev'));
+  } catch (error) {
+    console.error(chalk.red('❌ Error creating project:'), error instanceof Error ? error.message : 'Unknown error');
+    process.exit(1);
   }
-
-  // Create project structure
-  console.log(chalk.green('🏗️  Creating project structure...'));
-  await createProjectStructure(config);
-
-  // Generate manifest file
-  console.log(chalk.green('📄 Generating manifest file...'));
-  await generateManifest(config);
-
-  console.log(chalk.green('✅ Project created successfully!'));
-  console.log(chalk.yellow(`📁 cd ${answers.projectName}`));
-  console.log(chalk.yellow('📦 npm install'));
-  console.log(chalk.yellow('🚀 npm run dev'));
 }
