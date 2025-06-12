@@ -2,8 +2,12 @@ name: Publish CLI to npm
 
 on:
   push:
-    tags:
-      - "cli-v*.*.*" # e.g., cli-v1.2.3
+    branches:
+      - main
+  workflow_dispatch:
+  release:
+    types:
+      - published
 
 jobs:
   publish:
