@@ -14,9 +14,8 @@
     "prettier": "^3.0.0",
     "typescript": "^5.2.2"
   },
-  "packageManager": "npm@10.2.4",
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  "packageManager": "pnpm@8.6.5",
+  "engines": {
+    "pnpm": "^8.0.0"
+  }
 }
