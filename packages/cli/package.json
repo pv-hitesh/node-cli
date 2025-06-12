@@ -1,6 +1,6 @@
 {
   "name": "boiler-kick",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "CLI tool to generate backend API boilerplates with customizable architecture and tech stack",
   "type": "module",
   "bin": {
