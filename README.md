@@ -5,7 +5,7 @@ A powerful CLI tool to generate backend API boilerplates with customizable archi
 ## 📦 Packages
 
 - **`packages/cli`** - The main CLI tool for generating backend boilerplates
-- **`apps/website`** - Next.js website for documentation and marketing
+- **`apps/web`** - Next.js website for documentation and marketing
 
 ## 🚀 Quick Start
 
