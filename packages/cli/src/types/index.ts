@@ -1,8 +1,10 @@
 export interface ProjectConfig {
-  name: string;
-  framework: 'express' | 'fastify' | 'hono';
-  architecture: 'mvc' | 'mvc-service-repo' | 'clean' | 'hexagonal';
-  orm?: 'none' | 'mongoose' | 'prisma' | 'sequelize' | 'typeorm';
+  projectName: string;
+  language: 'javascript' | 'typescript';
+  framework: 'express' | 'fastify';
+  architecture: 'mvc' | 'layered';
+  orm: 'none' | 'mongoose' | 'prisma';
+  database: 'mongodb' | 'postgresql';
   features: Feature[];
   createdAt: string;
   cliVersion: string;
@@ -11,15 +13,20 @@ export interface ProjectConfig {
 export type Feature = 'auth' | 'logger' | 'cors' | 'rateLimit' | 'validation' | 'swagger' | 'testing';
 
 export interface CreateProjectOptions {
-  name?: string;
+  projectName?: string;
+  language?: string;
   framework?: string;
   architecture?: string;
+  orm?: string;
+  database?: string;
 }
 
 export interface PromptAnswers {
   projectName: string;
+  language: ProjectConfig['language'];
   framework: ProjectConfig['framework'];
   architecture: ProjectConfig['architecture'];
   orm: ProjectConfig['orm'];
+  database: ProjectConfig['database'];
   features: Feature[];
 }

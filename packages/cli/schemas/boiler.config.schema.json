@@ -3,27 +3,37 @@
   "type": "object",
   "title": "Boilerplate CLI Config Schema",
   "description": "Schema for boiler.config.json file",
-  "required": ["name", "framework", "architecture", "features", "createdAt", "cliVersion"],
+  "required": ["projectName", "language", "framework", "architecture", "features", "createdAt", "cliVersion"],
   "properties": {
-    "name": {
+    "projectName": {
       "type": "string",
       "description": "Project name",
       "minLength": 1
     },
+    "language": {
+      "type": "string",
+      "description": "Programming language",
+      "enum": ["javascript", "typescript"]
+    },
     "framework": {
       "type": "string",
       "description": "Backend framework",
-      "enum": ["express", "fastify", "hono"]
+      "enum": ["express", "fastify"]
     },
     "architecture": {
       "type": "string",
       "description": "Project architecture pattern",
-      "enum": ["mvc", "mvc-service-repo", "clean", "hexagonal"]
+      "enum": ["mvc", "layered"]
     },
     "orm": {
       "type": "string",
       "description": "ORM/ODM choice",
-      "enum": ["none", "mongoose", "prisma", "sequelize", "typeorm"]
+      "enum": ["none", "mongoose", "prisma"]
+    },
+    "database": {
+      "type": "string",
+      "description": "Database choice",
+      "enum": ["mongodb", "postgresql"]
     },
     "features": {
       "type": "array",

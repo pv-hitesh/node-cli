@@ -17,8 +17,11 @@ program
   .command('create')
   .description('Create a new project boilerplate')
   .option('-n, --name <name>', 'project name')
-  .option('-f, --framework <framework>', 'framework (express)')
-  .option('-a, --architecture <architecture>', 'architecture (mvc, mvc-service-repo)')
+  .option('-l, --language <language>', 'language (javascript, typescript)')
+  .option('-f, --framework <framework>', 'framework (express, fastify)')
+  .option('-a, --architecture <architecture>', 'architecture (mvc, layered)')
+  .option('-o, --orm <orm>', 'ORM/ODM (none, mongoose, prisma)')
+  .option('-d, --database <database>', 'database (mongodb, postgresql)')
   .action(async (options) => {
     try {
       console.log(chalk.blue('🚀 Welcome to Boilerplate CLI!'));

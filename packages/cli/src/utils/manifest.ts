@@ -3,7 +3,7 @@ import path from 'path';
 import type { ProjectConfig } from '../types/index.js';
 
 export async function generateManifest(config: ProjectConfig): Promise<void> {
-  const manifestPath = path.join(process.cwd(), config.name, 'boiler.config.json');
+  const manifestPath = path.join(process.cwd(), config.projectName, 'boiler.config.json');
   await fs.writeJSON(manifestPath, config, { spaces: 2 });
 }
 

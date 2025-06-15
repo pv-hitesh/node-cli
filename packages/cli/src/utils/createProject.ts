@@ -41,7 +41,7 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
         type: 'input',
         name: 'projectName',
         message: 'What is your project name?',
-        initial: options.name || 'my-api',
+        initial: options.projectName || 'my-api',
         validate: (value: string) => {
           if (!value.length) return 'Project name is required';
           if (!/^[a-z0-9-]+$/.test(value)) return 'Project name can only contain lowercase letters, numbers, and hyphens';
@@ -50,10 +50,21 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
       } as InputQuestion,
       {
         type: 'select',
+        name: 'language',
+        message: 'Choose your language:',
+        choices: [
+          'javascript',
+          'typescript'
+        ],
+        initial: options.language || 'javascript'
+      } as SelectQuestion,
+      {
+        type: 'select',
         name: 'framework',
         message: 'Choose your framework:',
         choices: [
-          'express'
+          'express',
+          'fastify'
         ],
         initial: options.framework || 'express'
       } as SelectQuestion,
@@ -63,7 +74,7 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
         message: 'Choose your architecture:',
         choices: [
           'mvc',
-          'mvc-service-repo'
+          'layered'
         ],
         initial: options.architecture || 'mvc'
       } as SelectQuestion,
@@ -77,6 +88,16 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
           'prisma'
         ],
         initial: 'none'
+      } as SelectQuestion,
+      {
+        type: 'select',
+        name: 'database',
+        message: 'Choose your database:',
+        choices: [
+          'mongodb',
+          'postgresql'
+        ],
+        initial: 'mongodb'
       } as SelectQuestion,
       {
         type: 'multiselect',
@@ -94,10 +115,12 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
     ]);
 
     const config: ProjectConfig = {
-      name: answers.projectName.toLowerCase(),
+      projectName: answers.projectName.toLowerCase(),
+      language: answers.language,
       framework: answers.framework,
       architecture: answers.architecture,
       orm: answers.orm,
+      database: answers.database,
       features: answers.features || [],
       createdAt: new Date().toISOString(),
       cliVersion: '1.0.0'
@@ -121,7 +144,7 @@ export async function createProject(options: CreateProjectOptions = {}): Promise
     await generateManifest(config);
 
     console.log(chalk.green('✅ Project created successfully!'));
-    console.log(chalk.yellow(`📁 cd ${config.name}`));
+    console.log(chalk.yellow(`📁 cd ${config.projectName}`));
     console.log(chalk.yellow('📦 npm install'));
     console.log(chalk.yellow('🚀 npm run dev'));
   } catch (error) {
